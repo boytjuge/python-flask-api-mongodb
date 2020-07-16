@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>order</title>
+    <script>
+        function fetchUserData() {
+            //  console.log(Location.host);
+            fetch('http://127.0.0.1:5000/api/getorder')
+                .then(response => response.json())
+                .then(users => {
+                    let output = '<h2>Lists of Order</h2>';
+                    output += '<ul>';
+                    users.forEach(function(user) {
+                        output += `
+                            <li>
+                                <button  onclick="deleteorder('${user._id}');" id="btn${user._id}" style='color:red'>delete</button>  Id: ${user._id}, Name : ${user.name} 
+                            </li>
+                        `;
+                    });
+                    output += '</ul>'
+                    document.getElementById("response").innerHTML = output;
+                });
+        }
+
+        //   document.getElementById('fetchUserDataBtn').addEventListener('click', fetchUserData);
+    </script>
+
+    <script>
+        function addorder() {
+            var ordername = document.getElementById("neworders").value;
+            // console.log(ordername);
+            if (ordername != "") {
+                const data = {
+                    name: ordername
+                };
+
+                fetch('http://127.0.0.1:5000/api/insertorder', {
+                        method: 'POST', // or 'PUT'
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            } else {
+
+                alert('please fill order!!');
+            }
+            fetchUserData();
+        }
+    </script>
+
+
+
+    <script type="text/javascript">
+        function deleteorder(cid) {
+            // alert(cid);
+            const data = {
+                id: cid
+            };
+            fetch('http://127.0.0.1:5000/api/deleteorder', {
+                    method: 'POST', // or 'PUT'
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    alert('delete Susccess , ID : ' + cid);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            fetchUserData();
+        }
+    </script>
+
+
+
+</head>
+
+<body onload="fetchUserData();">
+
+    <div>
+        <h1>Getting Started With Fetch API</h1>
+
+        <input type="text" name="neworder" id="neworders" placeholder="add order here"> <button id="add" onclick="addorder()">+</button>
+        <button id="fetchUserDataBtn" onclick="fetchUserData()">Fetch Order Data</button>
+    </div>
+    <hr>
+    <div id="response"></div>
+
+
+</body>
+
+</html>
